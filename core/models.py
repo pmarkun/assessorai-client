@@ -128,3 +128,32 @@ class ArquivoBiblioteca(TimestampMixin):
 
     def __str__(self):
         return self.titulo
+
+
+# ────────────────────────────────────────────────────────────────
+#  Equipe e Configurações de IA
+# ────────────────────────────────────────────────────────────────
+class Invitation(TimestampMixin):
+    """Convite para novos membros da equipe."""
+
+    mandato = models.ForeignKey(Mandato, on_delete=models.CASCADE, related_name="convites")
+    nome = models.CharField(max_length=255)
+    email = models.EmailField()
+    funcao = models.CharField(max_length=100, blank=True)
+    token = models.CharField(max_length=64, unique=True)
+
+    def __str__(self):
+        return f"{self.email} - {self.funcao}"
+
+
+class AISettings(models.Model):
+    """Configurações para acesso à API de IA."""
+
+    api_key = models.CharField(max_length=255, blank=True)
+    model_name = models.CharField(max_length=100, default="gpt-3.5-turbo")
+
+    @classmethod
+    def get_solo(cls):
+        obj, _ = cls.objects.get_or_create(pk=1)
+        return obj
+

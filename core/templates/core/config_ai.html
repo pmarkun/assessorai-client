@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Configurar IA - AssessorAI{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
+  <h1 class="text-2xl font-bold text-gray-800 mb-4">Configurações de IA</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <button type="submit" class="mt-4 bg-purple-600 text-white px-4 py-2 rounded">Salvar</button>
+  </form>
+</div>
+{% endblock %}
