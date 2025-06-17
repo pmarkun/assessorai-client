@@ -1,5 +1,6 @@
 # settings.py — completo para dev (SQLite)
 from pathlib import Path
+import os
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -136,3 +137,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 #  Default primary key field type
 # ──────────────────────────────────────────────────────────────
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# AssessorAI API
+AI_API_BASE_URL = "https://assessorai.fly.dev"
+AI_API_KEY = os.getenv("AI_API_KEY", "12345")
