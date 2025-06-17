@@ -8,9 +8,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% tailwind_css %}
 </head>
-<body class="bg-[#F8F8F8] text-[#1E1E1E] font-sans leading-normal tracking-normal">
-    {% block content %}
-    <!-- Authentication page content -->
-    {% endblock content %}
+<body class="bg-gray-100 text-gray-900 font-sans flex items-center justify-center min-h-screen">
+    <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md">
+        {% block content %}{% endblock content %}
+    </div>
 </body>
 </html>
