@@ -8,9 +8,12 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
-from .models import Mandato, User, Planejamento, Objetivo, Invitation, AISettings
+from .models import Mandato, User, Planejamento, Objetivo, Invitation, AISettings, ArquivoBiblioteca
 from .forms import MandatoForm, PlanejamentoForm, TeamMemberForm, AIConfigForm
 from . import ai
+from django.shortcuts import get_object_or_404
+from django.conf import settings
+import requests
 
 
 class WelcomeView(LoginRequiredMixin, TemplateView):
@@ -209,6 +212,52 @@ class MeuPlanejamentoView(LoginRequiredMixin, UpdateView):
                 messages.success(self.request, 'Planejamento criado com sucesso!')
             else:
                 messages.success(self.request, 'Planejamento atualizado com sucesso!')
-            
+
             self.object = form.save()
         return super().form_valid(form)
+
+
+def sugestao_emendas(request, arquivo_id):
+    """Gera sugestões de emendas a partir de um PDF"""
+    if not request.user.is_authenticated:
+        return redirect('account_login')
+
+    user = request.user
+    if not user.mandato:
+        messages.error(request, 'Você precisa cadastrar seu mandato para usar esta função.')
+        return redirect('core:meu_mandato')
+
+    arquivo = get_object_or_404(ArquivoBiblioteca, id=arquivo_id, mandato=user.mandato)
+
+    dados = {
+        'nome_parlamentar': user.mandato.nome_parlamentar,
+        'casa_legislativa': user.mandato.get_casa_legislativa_display(),
+        'esfera': {
+            Mandato.CasaLegislativa.CM: 'Municipal',
+            Mandato.CasaLegislativa.ALE: 'Estadual',
+            Mandato.CasaLegislativa.CF: 'Federal',
+            Mandato.CasaLegislativa.SENADO: 'Federal',
+        }.get(user.mandato.casa_legislativa, ''),
+        'municipio': user.mandato.municipio,
+        'ue': user.mandato.estado,
+        'temas_interesse': getattr(getattr(user.mandato, 'planejamento', None), 'temas_interesse', ''),
+        'perfil_parlamentar': user.mandato.get_perfil_display(),
+        'espectro_politico': user.mandato.get_posicionamento_display(),
+        'origem_legislativa': 'Legislativo',
+    }
+
+    sugestoes = None
+    try:
+        with arquivo.arquivo.open('rb') as f:
+            files = {'file': f}
+            headers = {'X-API-Key': settings.AI_API_KEY}
+            url = f"{settings.AI_API_BASE_URL}/expert/pl/sugestao_emendas"
+            resp = requests.post(url, headers=headers, files=files, data=dados, timeout=60)
+            if resp.ok:
+                sugestoes = resp.json()
+            else:
+                sugestoes = {'erro': f'Erro {resp.status_code} ao consultar API'}
+    except Exception as exc:
+        sugestoes = {'erro': str(exc)}
+
+    return render(request, 'core/sugestao_emendas.html', {'arquivo': arquivo, 'sugestoes': sugestoes})

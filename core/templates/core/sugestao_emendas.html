@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block title %}Sugestão de Emendas{% endblock title %}
+{% block content %}
+<h1 class="text-2xl font-bold mb-4">Sugestão de Emendas</h1>
+{% if sugestoes %}
+    <form method="post">
+        {% csrf_token %}
+        <textarea name="texto" rows="15" class="w-full p-2 border border-gray-300 rounded">{{ sugestoes|safe }}</textarea>
+        <div class="mt-4">
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Salvar</button>
+        </div>
+    </form>
+{% else %}
+    <p class="text-gray-600">Nenhuma sugestão encontrada.</p>
+{% endif %}
+{% endblock content %}

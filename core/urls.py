@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import WelcomeView, MeuMandatoView, MeuPlanejamentoView
+from .views import WelcomeView, MeuMandatoView, MeuPlanejamentoView, sugestao_emendas
 
 app_name = "core"
 
@@ -14,6 +14,7 @@ urlpatterns = [
     path("api/equipe/remove/<int:user_id>/", views.remove_member, name="remove_member"),
     path("api/ai/sugestoes/", views.ai_suggestions, name="ai_suggestions"),
     path("config/ia/", views.config_ai, name="config_ai"),
+    path("sugestao-emendas/<int:arquivo_id>/", views.sugestao_emendas, name="sugestao_emendas"),
 ]
 
 # As views podem usar @login_required e decorators de papel
