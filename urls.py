@@ -7,6 +7,7 @@ urlpatterns = [
     path("contas/", include("allauth.urls")),  # login/cadastro
     path("", RedirectView.as_view(url="/contas/login/", permanent=False)),  # Redirect root to login
     path("", include("core.urls")),            # app principal
+    path("expert-pl/", include("expert_pl.urls")),
 ]
 
 # Custom 404 handler
