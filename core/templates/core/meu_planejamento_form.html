@@ -31,7 +31,7 @@ Editar Meu Planejamento - AssessorAI
                     {{ form|crispy }}
                     
                     <div class="mt-8 flex gap-4">
-                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                        <button type="submit" class="flex-1 bg-[#A541FF] hover:bg-[#8200e3] text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                             {% if is_creating %}
                             Criar Planejamento
                             {% else %}
@@ -40,7 +40,7 @@ Editar Meu Planejamento - AssessorAI
                         </button>
                         
                         {% if not is_creating %}
-                        <button type="button" id="criar-com-ia" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                        <button type="button" id="criar-com-ia" class="bg-[#C55FFF] hover:bg-[#A541FF] text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                             🤖 Criar com IA
                         </button>
                         {% endif %}
@@ -56,7 +56,7 @@ Editar Meu Planejamento - AssessorAI
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
                     Objetivos e Metas
-                    <button type="button" id="adicionar-objetivo" class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition duration-150 ease-in-out">
+                    <button type="button" id="adicionar-objetivo" class="text-sm bg-[#C55FFF] hover:bg-[#A541FF] text-white px-3 py-1 rounded-md transition duration-150 ease-in-out">
                         + Adicionar Objetivo
                     </button>
                 </h3>
@@ -168,13 +168,13 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Estilo customizado para melhor aparência */
 .form-group label {
     font-weight: 600;
-    color: #374151;
+    color: #1E1E1E;
     margin-bottom: 0.5rem;
     display: block;
 }
 
 .form-group .helptext {
-    color: #6B7280;
+    color: #707070;
     font-size: 0.875rem;
     margin-top: 0.25rem;
 }
