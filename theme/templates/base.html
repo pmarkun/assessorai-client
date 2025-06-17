@@ -2,45 +2,60 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <title>{% block title %}AssessorAI{% endblock title %}</title>
     <meta charset="UTF-8">
+    <title>{% block title %}AssessorAI{% endblock title %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     {% tailwind_css %}
 </head>
-<body class="bg-[#F8F8F8] text-[#1E1E1E] font-sans leading-normal tracking-normal flex">
-
-    <!-- Sidebar -->
-    <aside class="bg-[#A541FF] text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out h-screen overflow-hidden flex flex-col justify-between">
-        <div>
-            <a href="{% url 'core:welcome' %}" class="text-white text-2xl font-semibold px-4">AssessorAI</a>
-            <nav class="mt-10">
-                <a href="{% url 'core:meu_planejamento' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Meu Planejamento</a>
-                <a href="{% url 'core:planejamento' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Planejamento Wizard</a>
-                <a href="{% url 'core:equipe' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Gestão de Equipe</a>
-                <a href="{% url 'core:config_ai' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Configurar IA</a>
-                <a href="{% url 'expert_pl:sugestao_emendas' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Expert de PL</a>
-            </nav>
-        </div>
-        <div>
-            <a href="{% url 'core:meu_mandato' %}" class="block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">Meu Mandato</a>
-            <form method="post" action="{% url 'account_logout' %}" class="w-full">
-                {% csrf_token %}
-                <button type="submit" class="w-full text-left block py-2.5 px-4 rounded transition duration-200 hover:bg-[#8200e3] hover:text-white">
-                    Logout
+<body class="bg-gray-50 text-gray-900 font-sans">
+    <div class="min-h-screen md:flex">
+        <!-- Mobile Header -->
+        <header class="md:hidden bg-white border-b">
+            <div class="flex items-center justify-between p-4">
+                <button id="menu-button" class="text-gray-600 focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
                 </button>
-            </form>
+                <a href="{% url 'core:welcome' %}" class="font-semibold text-lg">AssessorAI</a>
+                <div></div>
+            </div>
+        </header>
+
+        <!-- Sidebar -->
+        <aside id="sidebar" class="bg-purple-600 text-white w-64 space-y-6 py-7 px-2 transform -translate-x-full md:translate-x-0 fixed inset-y-0 left-0 transition-transform duration-200 md:relative flex flex-col justify-between overflow-y-auto">
+            <div>
+                <a href="{% url 'core:welcome' %}" class="text-white text-2xl font-semibold px-4 hidden md:block">AssessorAI</a>
+                <nav class="mt-10">
+                    <a href="{% url 'core:meu_planejamento' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Meu Planejamento</a>
+                    <a href="{% url 'core:planejamento' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Planejamento Wizard</a>
+                    <a href="{% url 'core:equipe' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Gestão de Equipe</a>
+                    <a href="{% url 'core:config_ai' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Configurar IA</a>
+                    <a href="{% url 'expert_pl:sugestao_emendas' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Expert de PL</a>
+                </nav>
+            </div>
+            <div class="pb-4">
+                <a href="{% url 'core:meu_mandato' %}" class="block py-2.5 px-4 rounded transition hover:bg-purple-700">Meu Mandato</a>
+                <form method="post" action="{% url 'account_logout' %}" class="w-full mt-2">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full text-left block py-2.5 px-4 rounded transition hover:bg-purple-700">
+                        Logout
+                    </button>
+                </form>
+            </div>
+        </aside>
+
+        <!-- Page Content -->
+        <div class="flex-1 md:ml-64">
+            <main class="p-6 max-w-7xl mx-auto">
+                {% block content %}
+                <h1 class="text-3xl text-gray-700">Bem-vindo ao AssessorAI</h1>
+                <p class="mt-4 text-gray-500">Selecione uma opção no menu.</p>
+                {% endblock content %}
+            </main>
         </div>
-    </aside>
+    </div>
 
-    <!-- Content -->
-    <main class="flex-1 p-10 text-2xl font-bold">
-        {% block content %}
-        <!-- Default content if no block is provided -->
-        <h1 class="text-3xl text-gray-700">Bem-vindo ao AssessorAI</h1>
-        <p class="mt-4 text-gray-500">Selecione uma opção na barra lateral.</p>
-        {% endblock content %}
-    </main>
-
+    <script src="{% static 'js/menu.js' %}"></script>
 </body>
 </html>
