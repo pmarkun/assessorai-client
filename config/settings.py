@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     # Apps locais
     "core.apps.CoreConfig",  # onde estão os modelos (Mandato, etc.)
     "theme",  # onde estão os temas (cores, fontes, etc.)
+    "expert_pl.apps.ExpertPlConfig",
 ]
 
 SITE_ID = 1
