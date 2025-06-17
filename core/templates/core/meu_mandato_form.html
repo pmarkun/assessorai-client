@@ -10,7 +10,7 @@ Editar Meu Mandato - AssessorAI
 {% endblock title %}
 
 {% block content %}
-<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+<div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
     {% if is_creating %}
     <h1 class="text-3xl font-bold text-gray-800 mb-6">Criar Meu Mandato</h1>
     <p class="text-gray-600 mb-6">Parece que você ainda não possui um mandato cadastrado. Preencha as informações abaixo para criar seu mandato.</p>
@@ -22,7 +22,7 @@ Editar Meu Mandato - AssessorAI
         {% csrf_token %}
         {{ form|crispy }}
         <div class="mt-8">
-            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+            <button type="submit" class="w-full bg-[#A541FF] hover:bg-[#8200e3] text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
                 {% if is_creating %}
                 Criar Mandato
                 {% else %}
@@ -125,17 +125,25 @@ document.addEventListener('DOMContentLoaded', function() {
 /* Custom styles for better form appearance */
 .form-row {
     margin-bottom: 1rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+@media (min-width: 768px) {
+    .form-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
 }
 
 .form-group label {
     font-weight: 600;
-    color: #374151;
+    color: #1E1E1E;
     margin-bottom: 0.5rem;
     display: block;
 }
 
 .form-group .helptext {
-    color: #6B7280;
+    color: #707070;
     font-size: 0.875rem;
     margin-top: 0.25rem;
 }

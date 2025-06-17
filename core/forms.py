@@ -43,18 +43,18 @@ class MandatoForm(forms.ModelForm):
             Fieldset(
                 '',
                 Row(
-                    Column('nome_parlamentar', css_class='form-group col-md-12 mb-4'),
-                    css_class='form-row'
+                    Column('nome_parlamentar', css_class='form-group w-full mb-4'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 Row(
-                    Column('casa_legislativa', css_class='form-group col-md-6 mb-4'),
-                    Column('cargo', css_class='form-group col-md-6 mb-4'),
-                    css_class='form-row'
+                    Column('casa_legislativa', css_class='form-group w-full md:w-1/2'),
+                    Column('cargo', css_class='form-group w-full md:w-1/2'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 Row(
-                    Column('estado', css_class='form-group col-md-6 mb-4'),
-                    Column('municipio', css_class='form-group col-md-6 mb-4'),
-                    css_class='form-row'
+                    Column('estado', css_class='form-group w-full md:w-1/2'),
+                    Column('municipio', css_class='form-group w-full md:w-1/2'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 css_class='mb-6'
             ),
@@ -62,13 +62,13 @@ class MandatoForm(forms.ModelForm):
             Fieldset(
                 '',
                 Row(
-                    Column('posicionamento', css_class='form-group col-md-6 mb-4'),
-                    Column('perfil', css_class='form-group col-md-6 mb-4'),
-                    css_class='form-row'
+                    Column('posicionamento', css_class='form-group w-full md:w-1/2'),
+                    Column('perfil', css_class='form-group w-full md:w-1/2'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 Row(
-                    Column('primeiro_mandato', css_class='form-group col-md-12 mb-4'),
-                    css_class='form-row'
+                    Column('primeiro_mandato', css_class='form-group w-full'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 css_class='mb-6'
             )
@@ -159,13 +159,13 @@ class PlanejamentoForm(forms.ModelForm):
             Fieldset(
                 '',
                 Row(
-                    Column('oportunidades', css_class='form-group col-md-6 mb-4'),
-                    Column('fraquezas', css_class='form-group col-md-6 mb-4'),
-                    css_class='form-row'
+                    Column('oportunidades', css_class='form-group w-full md:w-1/2'),
+                    Column('fraquezas', css_class='form-group w-full md:w-1/2'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 Row(
-                    Column('temas_interesse', css_class='form-group col-md-12 mb-4'),
-                    css_class='form-row'
+                    Column('temas_interesse', css_class='form-group w-full'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 css_class='mb-6'
             ),
@@ -173,8 +173,8 @@ class PlanejamentoForm(forms.ModelForm):
             Fieldset(
                 '',
                 Row(
-                    Column('objetivo_ano', css_class='form-group col-md-12 mb-4'),
-                    css_class='form-row'
+                    Column('objetivo_ano', css_class='form-group w-full'),
+                    css_class='form-row grid grid-cols-1 md:grid-cols-2 gap-4'
                 ),
                 css_class='mb-6'
             )
