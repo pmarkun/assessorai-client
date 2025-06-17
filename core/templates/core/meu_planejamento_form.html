@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+{% if is_creating %}
+Criar Meu Planejamento - AssessorAI
+{% else %}
+Editar Meu Planejamento - AssessorAI
+{% endif %}
+{% endblock title %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto">
+    <!-- Header -->
+    <div class="bg-white p-8 rounded-lg shadow-md mb-6">
+        {% if is_creating %}
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Planeje ações para todas as áreas do mandato</h1>
+        <p class="text-gray-600">A AssessorAI pode sugerir objetivos e metas para uma atuação mais efetiva</p>
+        {% else %}
+        <h1 class="text-3xl font-bold text-gray-800 mb-4">Meu Planejamento</h1>
+        <p class="text-gray-600">Gerencie e atualize seu planejamento estratégico</p>
+        {% endif %}
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Formulário Principal -->
+        <div class="lg:col-span-2">
+            <div class="bg-white p-8 rounded-lg shadow-md">
+                <form method="post" id="planejamento-form">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    
+                    <div class="mt-8 flex gap-4">
+                        <button type="submit" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                            {% if is_creating %}
+                            Criar Planejamento
+                            {% else %}
+                            Salvar Alterações
+                            {% endif %}
+                        </button>
+                        
+                        {% if not is_creating %}
+                        <button type="button" id="criar-com-ia" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                            🤖 Criar com IA
+                        </button>
+                        {% endif %}
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Sidebar com informações -->
+        <div class="space-y-6">
+            <!-- Objetivos e Metas -->
+            {% if not is_creating %}
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center justify-between">
+                    Objetivos e Metas
+                    <button type="button" id="adicionar-objetivo" class="text-sm bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-md transition duration-150 ease-in-out">
+                        + Adicionar Objetivo
+                    </button>
+                </h3>
+                
+                {% if objetivos %}
+                <div class="space-y-3">
+                    {% for objetivo in objetivos %}
+                    <div class="bg-gray-50 p-3 rounded-md">
+                        <p class="text-sm text-gray-700">{{ objetivo.descricao }}</p>
+                        <div class="mt-2 flex justify-between items-center">
+                            <span class="text-xs text-gray-500">{{ objetivo.metas.count }} meta(s)</span>
+                            <button class="text-xs text-red-600 hover:text-red-800">Remover</button>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p class="text-sm text-gray-500">Nenhum objetivo definido ainda.</p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <!-- Informações sobre IA -->
+            <div class="bg-purple-50 border border-purple-200 rounded-lg p-6">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <svg class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <h4 class="text-sm font-medium text-purple-800 mb-2">Como a IA pode ajudar?</h4>
+                        <div class="text-sm text-purple-700">
+                            <p class="mb-2">A AssessorAI pode analisar seu planejamento e sugerir:</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                <li>Objetivos específicos e mensuráveis</li>
+                                <li>Estratégias para superar ameaças</li>
+                                <li>Como aproveitar oportunidades</li>
+                                <li>Cronograma de ações</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if mandato %}
+            <!-- Informações do Mandato -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-6">
+                <h4 class="text-sm font-medium text-blue-800 mb-3">Seu Mandato</h4>
+                <div class="text-sm text-blue-700 space-y-1">
+                    <p><strong>{{ mandato.nome_parlamentar }}</strong></p>
+                    <p>{{ mandato.get_cargo_display }}</p>
+                    <p>{{ mandato.get_casa_legislativa_display }}</p>
+                    {% if mandato.municipio %}
+                    <p>{{ mandato.municipio }}, {{ mandato.estado }}</p>
+                    {% else %}
+                    <p>{{ mandato.estado }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Contador de caracteres para textareas
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(textarea => {
+        const maxLength = textarea.getAttribute('maxlength');
+        if (maxLength) {
+            const container = textarea.parentElement;
+            const counter = document.createElement('div');
+            counter.className = 'text-xs text-gray-500 mt-1 text-right';
+            counter.textContent = `${textarea.value.length}/${maxLength}`;
+            container.appendChild(counter);
+
+            textarea.addEventListener('input', function() {
+                counter.textContent = `${this.value.length}/${maxLength}`;
+                if (this.value.length > maxLength * 0.9) {
+                    counter.className = 'text-xs text-red-500 mt-1 text-right';
+                } else {
+                    counter.className = 'text-xs text-gray-500 mt-1 text-right';
+                }
+            });
+        }
+    });
+
+    // Botão "Criar com IA"
+    const criarComIaBtn = document.getElementById('criar-com-ia');
+    if (criarComIaBtn) {
+        criarComIaBtn.addEventListener('click', function() {
+            alert('Funcionalidade de IA em desenvolvimento. Em breve você poderá gerar objetivos e metas automaticamente!');
+        });
+    }
+
+    // Botão "Adicionar Objetivo"
+    const adicionarObjetivoBtn = document.getElementById('adicionar-objetivo');
+    if (adicionarObjetivoBtn) {
+        adicionarObjetivoBtn.addEventListener('click', function() {
+            alert('Funcionalidade de objetivos em desenvolvimento. Em breve você poderá adicionar objetivos específicos!');
+        });
+    }
+});
+</script>
+
+<style>
+/* Estilo customizado para melhor aparência */
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-group .helptext {
+    color: #6B7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.errorlist {
+    color: #DC2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    list-style: none;
+    padding: 0;
+}
+
+.errorlist li {
+    margin-bottom: 0.25rem;
+}
+
+/* Destaque para campos obrigatórios */
+.form-group.required label::after {
+    content: " *";
+    color: #DC2626;
+}
+
+/* Transições suaves */
+button, input, textarea {
+    transition: all 0.15s ease-in-out;
+}
+
+/* Ajuste para textareas com contador */
+.form-group {
+    position: relative;
+}
+</style>
+{% endblock content %}

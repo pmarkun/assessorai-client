@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block title %}Página não encontrada - AssessorAI{% endblock title %}
+
+{% block content %}
+<div class="text-center">
+    <h1 class="text-6xl font-bold text-gray-400 mb-4">404</h1>
+    <h2 class="text-3xl font-bold text-gray-800 mb-4">Página não encontrada</h2>
+    <p class="text-lg text-gray-600 mb-8">A página que você está procurando não existe ou foi movida.</p>
+    <a href="{% url 'core:welcome' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition duration-150 ease-in-out">
+        Voltar ao Início
+    </a>
+</div>
+{% endblock content %}

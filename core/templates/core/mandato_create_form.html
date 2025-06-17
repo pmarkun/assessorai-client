@@ -1,0 +1,149 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Criar Meu Mandato - AssessorAI{% endblock title %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Criar Meu Mandato</h1>
+    <p class="text-gray-600 mb-6">Parece que você ainda não possui um mandato cadastrado. Preencha as informações abaixo para criar seu mandato.</p>
+    
+    <form method="post" id="mandato-form">
+        {% csrf_token %}
+        {{ form|crispy }}
+        <div class="mt-8">
+            <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline transition duration-150 ease-in-out">
+                Criar Mandato
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const cargoField = document.getElementById('id_cargo');
+    const casaLegislativaField = document.getElementById('id_casa_legislativa');
+    const municipioRow = document.querySelector('#div_id_municipio').closest('.form-row');
+    const municipioField = document.getElementById('id_municipio');
+
+    // Cargo to Casa Legislativa mapping
+    const cargoToCasa = {
+        'vereador': 'cm',
+        'dep_estadual': 'ale', 
+        'dep_federal': 'cf',
+        'senador': 'senado'
+    };
+
+    function updateFormBasedOnCargo() {
+        const selectedCargo = cargoField.value;
+        
+        // Auto-select casa legislativa based on cargo
+        if (selectedCargo && cargoToCasa[selectedCargo]) {
+            casaLegislativaField.value = cargoToCasa[selectedCargo];
+        }
+
+        // Show/hide municipality field
+        if (selectedCargo === 'vereador') {
+            municipioRow.style.display = 'block';
+            municipioField.required = true;
+            // Add visual indicator for required field
+            const municipioLabel = document.querySelector('label[for="id_municipio"]');
+            if (municipioLabel && !municipioLabel.textContent.includes('*')) {
+                municipioLabel.innerHTML += ' <span class="text-red-500">*</span>';
+            }
+        } else {
+            municipioRow.style.display = 'none';
+            municipioField.required = false;
+            municipioField.value = '';
+            // Remove visual indicator
+            const municipioLabel = document.querySelector('label[for="id_municipio"]');
+            if (municipioLabel) {
+                municipioLabel.innerHTML = municipioLabel.innerHTML.replace(' <span class="text-red-500">*</span>', '');
+            }
+        }
+    }
+
+    // Update form on page load
+    updateFormBasedOnCargo();
+
+    // Update form when cargo changes
+    cargoField.addEventListener('change', updateFormBasedOnCargo);
+
+    // Prevent casa legislativa from being changed manually if cargo is selected
+    casaLegislativaField.addEventListener('change', function() {
+        const selectedCargo = cargoField.value;
+        if (selectedCargo && cargoToCasa[selectedCargo]) {
+            // Reset to auto-selected value if user tries to change it
+            setTimeout(() => {
+                casaLegislativaField.value = cargoToCasa[selectedCargo];
+            }, 100);
+        }
+    });
+
+    // Form validation before submit
+    document.getElementById('mandato-form').addEventListener('submit', function(e) {
+        const selectedCargo = cargoField.value;
+        const selectedCasa = casaLegislativaField.value;
+        const municipio = municipioField.value.trim();
+
+        // Check cargo/casa consistency
+        if (selectedCargo && cargoToCasa[selectedCargo] && selectedCasa !== cargoToCasa[selectedCargo]) {
+            e.preventDefault();
+            alert('Por favor, verifique se o cargo e a casa legislativa estão compatíveis.');
+            return false;
+        }
+
+        // Check municipality for vereador
+        if (selectedCargo === 'vereador' && !municipio) {
+            e.preventDefault();
+            alert('Município é obrigatório para vereadores.');
+            municipioField.focus();
+            return false;
+        }
+    });
+});
+</script>
+
+<style>
+/* Custom styles for better form appearance */
+.form-row {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.form-group .helptext {
+    color: #6B7280;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.errorlist {
+    color: #DC2626;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    list-style: none;
+    padding: 0;
+}
+
+.errorlist li {
+    margin-bottom: 0.25rem;
+}
+
+/* Highlight required fields */
+.form-group.required label::after {
+    content: " *";
+    color: #DC2626;
+}
+
+/* Transition for municipality field */
+#div_id_municipio {
+    transition: opacity 0.3s ease-in-out;
+}
+</style>
+{% endblock content %}
