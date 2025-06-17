@@ -5,4 +5,5 @@ crispy-tailwind
 django-role-permissions
 django-admin-interface
 django-tailwind[reload]
+openai
 requests

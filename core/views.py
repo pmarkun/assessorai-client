@@ -4,11 +4,16 @@ from django.views.generic import TemplateView, UpdateView, CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.core.mail import send_mail
+from django.utils.crypto import get_random_string
+from .models import Mandato, User, Planejamento, Objetivo, Invitation, AISettings, ArquivoBiblioteca
+from .forms import MandatoForm, PlanejamentoForm, TeamMemberForm, AIConfigForm
+from . import ai
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 import requests
-from .models import Mandato, User, Planejamento, Objetivo, ArquivoBiblioteca
-from .forms import MandatoForm, PlanejamentoForm
 
 
 class WelcomeView(LoginRequiredMixin, TemplateView):
@@ -74,10 +79,79 @@ def planejamento_wizard(request):
     return render(request, 'core/planejamento.html', {})
 
 def gestao_equipe(request):
-    """
-    View para gestão de equipe
-    """
-    return render(request, 'core/equipe.html', {})
+    """Página principal de gestão de equipe."""
+    user = request.user
+    if not user.is_authenticated or not user.mandato:
+        return redirect('core:welcome')
+
+    membros = user.mandato.usuarios.all()
+    form = TeamMemberForm()
+    return render(request, 'core/equipe.html', {
+        'membros': membros,
+        'form': form,
+    })
+
+
+@require_POST
+def invite_member(request):
+    form = TeamMemberForm(request.POST)
+    if form.is_valid() and request.user.mandato:
+        token = get_random_string(32)
+        Invitation.objects.create(
+            mandato=request.user.mandato,
+            nome=form.cleaned_data['nome'],
+            email=form.cleaned_data['email'],
+            funcao=form.cleaned_data['funcao'],
+            token=token,
+        )
+        signup_url = request.build_absolute_uri(reverse_lazy('account_signup'))
+        send_mail(
+            'Convite para integrar equipe',
+            f'Você foi convidado para fazer parte da equipe. Cadastre-se em {signup_url} usando este email.',
+            None,
+            [form.cleaned_data['email']],
+            fail_silently=True,
+        )
+        return JsonResponse({'ok': True})
+    return JsonResponse({'ok': False}, status=400)
+
+
+@require_POST
+def remove_member(request, user_id):
+    if not request.user.mandato:
+        return JsonResponse({'ok': False}, status=400)
+    try:
+        member = User.objects.get(pk=user_id, mandato=request.user.mandato)
+        member.delete()
+        return JsonResponse({'ok': True})
+    except User.DoesNotExist:
+        return JsonResponse({'ok': False}, status=404)
+
+
+@require_POST
+def ai_suggestions(request):
+    tipo = request.POST.get('tipo')
+    mandato = request.user.mandato
+    if tipo == 'cargos':
+        num = int(request.POST.get('quantidade', '1'))
+        sugestao = ai.suggest_positions(num, mandato)
+    else:
+        cargo = request.POST.get('cargo')
+        sugestao = ai.suggest_tasks(cargo, mandato)
+    return JsonResponse({'sugestao': sugestao})
+
+
+def config_ai(request):
+    settings = AISettings.get_solo()
+    if request.method == 'POST':
+        form = AIConfigForm(request.POST, instance=settings)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Configurações salvas com sucesso.')
+            return redirect('core:config_ai')
+    else:
+        form = AIConfigForm(instance=settings)
+    return render(request, 'core/config_ai.html', {'form': form})
 
 
 class MeuPlanejamentoView(LoginRequiredMixin, UpdateView):
