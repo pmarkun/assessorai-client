@@ -4,7 +4,7 @@ from django.views.generic import TemplateView, UpdateView, CreateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 from django.core.mail import send_mail
 from django.utils.crypto import get_random_string
@@ -112,6 +112,9 @@ def invite_member(request):
             [form.cleaned_data['email']],
             fail_silently=True,
         )
+        if request.headers.get('HX-Request'):
+            membros = request.user.mandato.usuarios.all()
+            return render(request, 'core/partials/member_list.html', {'membros': membros})
         return JsonResponse({'ok': True})
     return JsonResponse({'ok': False}, status=400)
 
@@ -123,8 +126,12 @@ def remove_member(request, user_id):
     try:
         member = User.objects.get(pk=user_id, mandato=request.user.mandato)
         member.delete()
+        if request.headers.get('HX-Request'):
+            return HttpResponse('')
         return JsonResponse({'ok': True})
     except User.DoesNotExist:
+        if request.headers.get('HX-Request'):
+            return HttpResponse(status=404)
         return JsonResponse({'ok': False}, status=404)
 
 
