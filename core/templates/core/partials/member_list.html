@@ -1,0 +1,21 @@
+<div id="lista-membros" class="bg-white p-4 rounded shadow">
+  {% if membros %}
+  <table class="w-full text-sm">
+    <thead>
+      <tr class="text-left">
+        <th class="py-2">Nome</th>
+        <th class="py-2">Email</th>
+        <th class="py-2">Função</th>
+        <th class="py-2"></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in membros %}
+        {% include 'core/partials/member_row.html' with member=m %}
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-gray-500">Nenhum membro cadastrado.</p>
+  {% endif %}
+</div>

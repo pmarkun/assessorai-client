@@ -1,0 +1,8 @@
+<tr class="border-b" data-id="{{ member.id }}">
+  <td class="py-2">{{ member.first_name }}</td>
+  <td class="py-2">{{ member.email }}</td>
+  <td class="py-2">{{ member.funcao }}</td>
+  <td class="py-2 text-right">
+    <button hx-post="{% url 'core:remove_member' member.id %}" hx-target="closest tr" hx-swap="delete" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}' class="text-red-600">Remover</button>
+  </td>
+</tr>
